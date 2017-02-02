@@ -176,7 +176,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
             double[] line_pos, double[] line_dir, double[] intersection) {
 
         double[] tmp = new double[3];
-
+//asdf
         for (int i = 0; i < 3; i++) {
             tmp[i] = plane_pos[i] - line_pos[i];
         }
@@ -251,6 +251,8 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         int nSteps = (int)(rayLength / sampleStep); //number of sample steps
         int[] values = new int[nSteps];             //We will store all values along the beam in this array
         for (int i = 0; i < nSteps; i++) {
+           //Calculate sample coordinate along viewray, starting at entry point
+           
            // values[i] = Tri-linear interpolation of samples along the viewing ray, see assignment
         }
         
