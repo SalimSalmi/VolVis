@@ -243,12 +243,24 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         /* to be implemented:  You need to sample the ray and implement the MIP
          * right now it just returns yellow as a color
         */
-         
-        int color=0;
-
-        color = (255 << 24) | (255 << 16) | (255 << 8); 
         
-        return color;
+        //**********Tom trying stuff:*************
+        
+        //Cut ray into samples
+        double rayLength = VectorMath.distance(entryPoint,exitPoint); // Lenght between entry and exit point
+        int nSteps = (int)(rayLength / sampleStep); //number of sample steps
+        int[] values = new int[nSteps];             //We will store all values along the beam in this array
+        for (int i = 0; i < nSteps; i++) {
+           // values[i] = Tri-linear interpolation of samples along the viewing ray, see assignment
+        }
+        
+        //********** End of Tom trying stuff*********
+        
+        //*****Original code:
+//        int color=0;
+//
+//        color = (255 << 24) | (255 << 16) | (255 << 8); 
+//        return color;
     }
    
     
@@ -294,7 +306,8 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         /* To be partially implemented:
             This function traces the rays through the volume. Have a look and check that you understand how it works.
             You need to introduce here the different modalities MIP/Compositing/TF2/ etc...*/
-
+        
+        // uVec and vVec describe the plane perpendicular to ray viewVec
         double[] viewVec = new double[3];
         double[] uVec = new double[3];
         double[] vVec = new double[3];
@@ -312,8 +325,6 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         int increment=1;
         float sampleStep=0.2f;
         
-
-
         for (int j = 0; j < image.getHeight(); j++) {
             for (int i = 0; i < image.getWidth(); i++) {
                 image.setRGB(i, j, 0);
@@ -333,9 +344,12 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
 
                 computeEntryAndExit(pixelCoord, viewVec, entryPoint, exitPoint);
                 if ((entryPoint[0] > -1.0) && (exitPoint[0] > -1.0)) {
-                    //System.out.println("Entry: " + entryPoint[0] + " " + entryPoint[1] + " " + entryPoint[2]);
-                    //System.out.println("Exit: " + exitPoint[0] + " " + exitPoint[1] + " " + exitPoint[2]);
+//                    System.out.println("Entry: " + entryPoint[0] + " " + entryPoint[1] + " " + entryPoint[2]);
+//                    System.out.println("Exit: " + exitPoint[0] + " " + exitPoint[1] + " " + exitPoint[2]);
                     int pixelColor = 0;
+                    
+                
+                                      
                                    
                     /* set color to green if MipMode- see slicer function*/
                    if(mipMode) 
@@ -393,16 +407,17 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
 
                 int val = volume.getVoxelInterpolate(pixelCoord);
                 // Map the intensity to a grey value by linear scaling
-                voxelColor.r = val/max;
-                voxelColor.g = voxelColor.r;
-                voxelColor.b = voxelColor.r;
-                voxelColor.a = val > 0 ? 1.0 : 0.0;  // this makes intensity 0 completely transparent and the rest opaque
-                
+//                voxelColor.r = val/max;
+//                voxelColor.g = voxelColor.r;
+//                voxelColor.b = voxelColor.r;
+//                voxelColor.a = val > 0 ? 1.0 : 0.0;   // this makes intensity 0 completely transparent and the rest opaque
+//             
+              
                 // Alternatively, apply the transfer function to obtain a color
-                /*TFColor auxColor = new TFColor(); 
+                TFColor auxColor = new TFColor(); 
                 auxColor = tFunc.getColor(val);
                 voxelColor.r=auxColor.r;voxelColor.g=auxColor.g;voxelColor.b=auxColor.b;voxelColor.a=auxColor.a;
-                */
+                
                 
                 // BufferedImage expects a pixel color packed as ARGB in an int
                 int c_alpha = voxelColor.a <= 1.0 ? (int) Math.floor(voxelColor.a * 255) : 255;
