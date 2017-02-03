@@ -42,6 +42,8 @@ public class Volume {
         return data[x + dimX*(y + dimY * z)];
     }
     
+
+    
     public void setVoxel(int x, int y, int z, short value) {
         data[x + dimX*(y + dimY*z)] = value;
     }
