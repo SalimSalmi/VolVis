@@ -236,7 +236,8 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
             }
         }
     }
-    
+        
+                
         int traceRayMIP(double[] entryPoint, double[] exitPoint, double[] viewVec, double sampleStep) {
         /* to be implemented:  You need to sample the ray and implement the MIP
          * right now it just returns yellow as a color
@@ -278,8 +279,15 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         return pixelColor;    
         
         // ------------------------------
-    
         
+//        int color = (int)(255*MIPVal/volume.getMaximum());
+//                        
+//        
+//        int A = 255;
+//        int R = color;
+//        int G = color;
+//        int B = color;
+//        return (A << 24) | (R << 16) | (G << 8) | B;
         
         
         //********** End of Tom trying stuff*********
@@ -330,6 +338,36 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
 
     }
 
+    int traceRayComp(double[] entryPoint, double[] exitPoint, double[] viewVec, double sampleStep) {
+            //Method added by Tom. 
+        
+        //Cut ray into samples
+        double rayLength = VectorMath.distance(entryPoint,exitPoint); // Lenght between entry and exit point
+        int nSteps = (int)(rayLength / sampleStep); //number of sample steps
+        double[] samples = new double[nSteps]; //We will store all samples along the beam in this array
+        double[] samplePoint = entryPoint; //Take first sample at entry point
+       // double[] viewVecNorm = VectorMath.normalize(viewVec); //Normalize viewVec (not sure if it is always normalized)
+        double[] rayVec = VectorMath.normalize(VectorMath.subtract(exitPoint,entryPoint));//Unit vector in direction of ray
+        for (int i = 0; i < nSteps; i++) { //For all steps along ray          
+           samples[i] = (double) volume.getVoxelInterpolate(samplePoint);
+           
+           //Shift sample point in the direction of viewVec with sampleStep size
+           samplePoint = VectorMath.sum(samplePoint, VectorMath.scalarproduct(rayVec,sampleStep)); 
+           }
+        //Convert each sample to a color
+        
+        double val = VectorMath.max(samples); 
+        int color = (int)(255*val/volume.getMaximum());
+                        
+        
+        int A = 255;
+        int R = color;
+        int G = color;
+        int B = color;
+        return (A << 24) | (R << 16) | (G << 8) | B;
+        
+        }
+    
     void raycast(double[] viewMatrix) {
         /* To be partially implemented:
             This function traces the rays through the volume. Have a look and check that you understand how it works.
@@ -378,8 +416,15 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
                     
                                               
                     /* set color to green if MipMode- see slicer function*/
-                   if(mipMode) 
+                   if(mipMode) {
                         pixelColor= traceRayMIP(entryPoint,exitPoint,viewVec,sampleStep);
+                   }
+                                      
+                   if(compositingMode) {
+                       pixelColor = traceRayComp(entryPoint,exitPoint,viewVec,sampleStep);
+                   }
+                   
+                   
                                 
                     for (int ii = i; ii < i + increment; ii++) {
                         for (int jj = j; jj < j + increment; jj++) {
