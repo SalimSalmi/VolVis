@@ -176,7 +176,6 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
             double[] line_pos, double[] line_dir, double[] intersection) {
 
         double[] tmp = new double[3];
-//asdf
         for (int i = 0; i < 3; i++) {
             tmp[i] = plane_pos[i] - line_pos[i];
         }
@@ -238,8 +237,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         }
     }
     
-
-      int traceRayMIP(double[] entryPoint, double[] exitPoint, double[] viewVec, double sampleStep) {
+        int traceRayMIP(double[] entryPoint, double[] exitPoint, double[] viewVec, double sampleStep) {
         /* to be implemented:  You need to sample the ray and implement the MIP
          * right now it just returns yellow as a color
         */
@@ -249,12 +247,43 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         //Cut ray into samples
         double rayLength = VectorMath.distance(entryPoint,exitPoint); // Lenght between entry and exit point
         int nSteps = (int)(rayLength / sampleStep); //number of sample steps
-        int[] values = new int[nSteps];             //We will store all values along the beam in this array
+        double[] samples = new double[nSteps]; //We will store all samples along the beam in this array
+        double[] samplePoint = entryPoint; //Take first sample at entry point
+               
         for (int i = 0; i < nSteps; i++) {
            //Calculate sample coordinate along viewray, starting at entry point
+           double[] viewVecNorm = VectorMath.normalize(viewVec); //Normalize viewVec (not sure if it is already normalized)
+           //double[] rayVecNorm = VectorMath.normalize(VectorMath.subtract(exitPoint,entryPoint)); //This should be the same as viewVecNorm
+           // ViewVecNorm is opposite from rayVecNorm. 
            
-           // values[i] = Tri-linear interpolation of samples along the viewing ray, see assignment
+           samples[i] = (double) volume.getVoxelInterpolate(samplePoint);
+           
+           //Shift sample point in the direction of viewVec with sampleStep size
+           samplePoint = VectorMath.sum(samplePoint, VectorMath.scalarproduct(viewVecNorm,sampleStep));
         }
+        
+        //For MIP we pick the max value out of our samples
+        int MIPVal = (int) VectorMath.max(samples); //In slicer they do int. I'm not sure if that will be the case in our interpolation
+        
+        //----------------------{Copied from slicer function: 
+        TFColor voxelColor = new TFColor();
+        TFColor auxColor = new TFColor(); 
+        auxColor = tFunc.getColor(MIPVal);
+        voxelColor.r=auxColor.r;voxelColor.g=auxColor.g;voxelColor.b=auxColor.b;voxelColor.a=auxColor.a;
+                
+                
+        // BufferedImage expects a pixel color packed as ARGB in an int
+        int c_alpha = voxelColor.a <= 1.0 ? (int) Math.floor(voxelColor.a * 255) : 255;
+        int c_red = voxelColor.r <= 1.0 ? (int) Math.floor(voxelColor.r * 255) : 255;
+        int c_green = voxelColor.g <= 1.0 ? (int) Math.floor(voxelColor.g * 255) : 255;
+        int c_blue = voxelColor.b <= 1.0 ? (int) Math.floor(voxelColor.b * 255) : 255;
+        int pixelColor = (c_alpha << 24) | (c_red << 16) | (c_green << 8) | c_blue;
+        return pixelColor;    
+        
+        // ------------------------------
+    
+        
+        
         
         //********** End of Tom trying stuff*********
         
@@ -351,7 +380,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
                     int pixelColor = 0;
                     
                 
-                                      
+                     System.out.println("i: " + i + "j: " + j);                  
                                    
                     /* set color to green if MipMode- see slicer function*/
                    if(mipMode) 

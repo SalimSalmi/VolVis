@@ -46,5 +46,55 @@ public class VectorMath {
         return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
     }
     
+    //Normalize vector (Added by Tom)
+    public static double[] normalize(double[] v) {
+        double[] tmp = new double[3];
+        tmp[0] = v[0] / VectorMath.length(v); 
+        tmp[1] = v[1] / VectorMath.length(v); 
+        tmp[2] = v[2] / VectorMath.length(v); 
+        return tmp; 
+    }
+    
+    //Multiply vector with scalar (Added by Tom)
+    public static double[] scalarproduct(double[] v, double r) {
+        double[] tmp = new double[3];
+        tmp[0] = v[0]*r;
+        tmp[1] = v[1]*r;
+        tmp[2] = v[2]*r;
+        return tmp;
+    }
+    
+    //Sum vectors (Added by Tom)
+    public static double[] sum(double[] v, double[] w) {
+         double[] tmp = new double[3];
+         tmp[0] = v[0] + w[0];
+         tmp[1] = v[1] + w[1];
+         tmp[2] = v[2] + w[2];
+         return tmp; }
+    
+    //Subtract vectors (Added by Tom)
+    public static double[] subtract(double[] v, double[] w) {
+         double[] tmp = new double[3];
+         tmp[0] = v[0] - w[0];
+         tmp[1] = v[1] - w[1];
+         tmp[2] = v[2] - w[2];
+         return tmp;
+     }
+    
+    
+    //Max value (Added by Tom)
+    public static double max(double[] v) {
+    double max = v[0];
+    for (int ktr = 0; ktr < v.length; ktr++) {
+        if (v[ktr] > max) {
+            max = v[ktr];
+        }
+    }
+    return max;
+}
+    
+    
+            
+    
 
 }

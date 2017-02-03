@@ -5,11 +5,13 @@
         <group>
             <file>file:/E:/Dropbox/VolVis/src/util/VectorMath.java</file>
             <file>file:/E:/Dropbox/VolVis/src/gui/VolVisApplication.java</file>
+            <file>file:/E:/Dropbox/VolVis/src/volume/Volume.java</file>
             <file>file:/E:/Dropbox/VolVis/src/gui/TransferFunction2DEditor.java</file>
             <file>file:/E:/Dropbox/VolVis/src/volvis/Renderer.java</file>
             <file>file:/E:/Dropbox/VolVis/src/volvis/RaycastRenderer.java</file>
             <file>file:/E:/Dropbox/VolVis/src/volvis/TFColor.java</file>
             <file>file:/E:/Dropbox/VolVis/src/util/TFChangeListener.java</file>
+            <file>file:/E:/Dropbox/VolVis/test/TestClassTom.java</file>
             <file>file:/E:/Dropbox/VolVis/src/volvis/TransferFunction.java</file>
         </group>
     </open-files>
