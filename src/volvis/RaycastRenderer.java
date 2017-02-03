@@ -248,22 +248,19 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         double rayLength = VectorMath.distance(entryPoint,exitPoint); // Lenght between entry and exit point
         int nSteps = (int)(rayLength / sampleStep); //number of sample steps
         double[] samples = new double[nSteps]; //We will store all samples along the beam in this array
-        double[] samplePoint = entryPoint; //Take first sample at entry point
-               
-        for (int i = 0; i < nSteps; i++) {
-           //Calculate sample coordinate along viewray, starting at entry point
-           double[] viewVecNorm = VectorMath.normalize(viewVec); //Normalize viewVec (not sure if it is already normalized)
-           //double[] rayVecNorm = VectorMath.normalize(VectorMath.subtract(exitPoint,entryPoint)); //This should be the same as viewVecNorm
-           // ViewVecNorm is opposite from rayVecNorm. 
-           
+        double[] samplePoint = exitPoint; //Take first sample at EXIT point, since viewVec runs B2F
+        double[] viewVecNorm = VectorMath.normalize(viewVec); //Normalize viewVec (not sure if it is always normalized)
+
+        for (int i = 0; i < nSteps; i++) { //For all steps along ray          
            samples[i] = (double) volume.getVoxelInterpolate(samplePoint);
            
            //Shift sample point in the direction of viewVec with sampleStep size
-           samplePoint = VectorMath.sum(samplePoint, VectorMath.scalarproduct(viewVecNorm,sampleStep));
+           samplePoint = VectorMath.sum(samplePoint, VectorMath.scalarproduct(viewVecNorm,sampleStep)); 
         }
         
         //For MIP we pick the max value out of our samples
         int MIPVal = (int) VectorMath.max(samples); //In slicer they do int. I'm not sure if that will be the case in our interpolation
+        
         
         //----------------------{Copied from slicer function: 
         TFColor voxelColor = new TFColor();
@@ -379,9 +376,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
 //                    System.out.println("Exit: " + exitPoint[0] + " " + exitPoint[1] + " " + exitPoint[2]);
                     int pixelColor = 0;
                     
-                
-                     System.out.println("i: " + i + "j: " + j);                  
-                                   
+                                              
                     /* set color to green if MipMode- see slicer function*/
                    if(mipMode) 
                         pixelColor= traceRayMIP(entryPoint,exitPoint,viewVec,sampleStep);
