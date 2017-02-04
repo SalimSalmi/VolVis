@@ -283,6 +283,57 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         //Cut ray into samples
         double rayLength = VectorMath.distance(entryPoint,exitPoint); // Lenght between entry and exit point
         int nSteps = (int)(rayLength / sampleStep); //number of sample steps
+        TFColor[] samples = new TFColor[nSteps]; //We will store all samples along the beam in this array
+        double[] samplePoint = entryPoint; //Take first sample at entry point
+        // double[] viewVecNorm = VectorMath.normalize(viewVec); //Normalize viewVec (not sure if it is always normalized)
+        double[] rayVec = VectorMath.normalize(VectorMath.subtract(exitPoint,entryPoint));//Unit vector in direction of ray
+
+
+
+        for (int i = 0; i < nSteps; i++) { //For all steps along ray
+            TFColor voxelColor = new TFColor();
+            TFColor auxColor = tFunc.getColor(volume.getVoxelInterpolate(samplePoint));
+            voxelColor.r=auxColor.r;voxelColor.g=auxColor.g;voxelColor.b=auxColor.b;voxelColor.a=auxColor.a;
+
+            samples[i] = voxelColor;
+            //Shift sample point in the direction of viewVec with sampleStep size
+            samplePoint = VectorMath.sum(samplePoint, VectorMath.scalarproduct(rayVec,sampleStep));
+        }
+        //Convert each sample to a color
+
+        TFColor c = new TFColor();
+
+        if(samples.length > 0) {
+            c = samples[0];
+            for (int i = 0; i < samples.length; i++) {
+                c.r = c.r * (255 - c.a * i * sampleStep) + samples[i].r * i * sampleStep;
+                c.g = c.g * (255 - c.a * i * sampleStep) + samples[i].g * i * sampleStep;
+                c.b = c.b * (255 - c.a * i * sampleStep) + samples[i].b * i * sampleStep;
+
+                c.a = c.a * (255 - c.a * i * sampleStep) + c.a * i * sampleStep;
+            }
+        }
+
+        TFColor voxelColor = new TFColor();
+        TFColor auxColor = c;
+        voxelColor.r=auxColor.r;voxelColor.g=auxColor.g;voxelColor.b=auxColor.b;voxelColor.a=auxColor.a;
+
+
+        // BufferedImage expects a pixel color packed as ARGB in an int
+        int c_alpha = voxelColor.a <= 1.0 ? (int) Math.floor(voxelColor.a * 255) : 255;
+        int c_red = voxelColor.r <= 1.0 ? (int) Math.floor(voxelColor.r * 255) : 255;
+        int c_green = voxelColor.g <= 1.0 ? (int) Math.floor(voxelColor.g * 255) : 255;
+        int c_blue = voxelColor.b <= 1.0 ? (int) Math.floor(voxelColor.b * 255) : 255;
+        int pixelColor = (c_alpha << 24) | (c_red << 16) | (c_green << 8) | c_blue;
+        return pixelColor;
+
+    }
+
+    int traceRayTF2D(double[] entryPoint, double[] exitPoint, double[] viewVec, double sampleStep) {
+
+        //Cut ray into samples
+        double rayLength = VectorMath.distance(entryPoint,exitPoint); // Length between entry and exit point
+        int nSteps = (int)(rayLength / sampleStep); //number of sample steps
         double[] samples = new double[nSteps]; //We will store all samples along the beam in this array
         double[] samplePoint = entryPoint; //Take first sample at entry point
         // double[] viewVecNorm = VectorMath.normalize(viewVec); //Normalize viewVec (not sure if it is always normalized)
@@ -399,6 +450,10 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
 
                     if(compositingMode) {
                        pixelColor = traceRayComp(entryPoint,exitPoint,viewVec,sampleStep);
+                    }
+
+                    if(tf2dMode) {
+                        pixelColor = traceRayTF2D(entryPoint,exitPoint,viewVec,sampleStep);
                     }
                    
                     for (int ii = i; ii < i + increment; ii++) {
