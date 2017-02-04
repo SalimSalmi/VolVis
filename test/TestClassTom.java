@@ -8,18 +8,18 @@
  *
  * @author Tom
  */
-import volvis.RaycastRenderer;
 import util.VectorMath;
 
 public class TestClassTom {
-        
-    public static void main(String []args){
+
+    public static void main(String[] args) {
         double[] a = new double[3];
         double[] b = new double[3];
-        VectorMath.setVector(a,1,20,3);
+        VectorMath.setVector(a, 1, 20, 3);
         double maxa = VectorMath.max(a);
         System.out.println(maxa);
-    } 
+    }
+}
   
         
 //         double[] a = new double[3];
