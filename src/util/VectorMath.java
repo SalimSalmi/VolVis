@@ -84,17 +84,12 @@ public class VectorMath {
     
     //Max value (Added by Tom)
     public static double max(double[] v) {
-    double max = v[0];
-    for (int ktr = 0; ktr < v.length; ktr++) {
-        if (v[ktr] > max) {
-            max = v[ktr];
+        double max = 0;
+        for (int ktr = 0; ktr < v.length; ktr++) {
+            if (v[ktr] > max) {
+                max = v[ktr];
+            }
         }
+        return max;
     }
-    return max;
-}
-    
-    
-            
-    
-
 }

@@ -53,20 +53,42 @@ public class Volume {
     }
     
     public short getVoxelInterpolate(double[] coord) {
-    /* to be implemented: get the trilinear interpolated value. 
-        The current implementation gets the Nearest Neightbour */
-        
         if (coord[0] < 0 || coord[0] > (dimX-1) || coord[1] < 0 || coord[1] > (dimY-1)
                 || coord[2] < 0 || coord[2] > (dimZ-1)) {
             return 0;
         }
-        /* notice that in this framework we assume that the distance between neighbouring voxels is 1 in all directions*/
-        int x = (int) Math.round(coord[0]); 
-        int y = (int) Math.round(coord[1]);
-        int z = (int) Math.round(coord[2]);
-    
-        return getVoxel(x, y, z);
-        
+
+        double x = coord[0];
+        double y = coord[1];
+        double z = coord[2];
+        int x1 = (int) Math.floor(coord[0]);
+        int y1 = (int) Math.floor(coord[1]);
+        int z1 = (int) Math.floor(coord[2]);
+        int x2 = (int) Math.ceil(coord[0]);
+        int y2 = (int) Math.ceil(coord[1]);
+        int z2 = (int) Math.ceil(coord[2]);
+
+        short q000 = getVoxel(x1,y1,z1);
+        short q100 = getVoxel(x2,y1,z1);
+        short q010 = getVoxel(x1,y2,z1);
+        short q110 = getVoxel(x2,y2,z1);
+        short q001 = getVoxel(x1,y1,z2);
+        short q101 = getVoxel(x2,y1,z2);
+        short q011 = getVoxel(x1,y2,z2);
+        short q111 = getVoxel(x2,y2,z2);
+
+        double x00 = getLinearInterpolate(x, x1, x2, q000, q100);
+        double x10 = getLinearInterpolate(x, x1, x2, q010, q110);
+        double x01 = getLinearInterpolate(x, x1, x2, q001, q101);
+        double x11 = getLinearInterpolate(x, x1, x2, q011, q111);
+        double r0 = getLinearInterpolate(y, y1, y2, x00, x01);
+        double r1 = getLinearInterpolate(y, y1, y2, x10, x11);
+
+        return (short) getLinearInterpolate(z, z1, z2, r0, r1);
+    }
+
+    public static double getLinearInterpolate(double x, int x1, int x2, double q00, double q01) {
+        return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
     }
     
     public short getVoxel(int i) {
