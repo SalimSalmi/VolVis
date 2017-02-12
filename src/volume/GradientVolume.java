@@ -91,7 +91,7 @@ public class GradientVolume {
     }
 
     private float getFactor(double x, double x0, double x1) {
-        return (float) ((x1-x)/(x1-x0));
+        return (float) ((x-x0)/(x1-x0));
     }
 
     public void setGradient(int x, int y, int z, VoxelGradient value) {

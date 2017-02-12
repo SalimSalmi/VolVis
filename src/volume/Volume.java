@@ -58,6 +58,7 @@ public class Volume {
             return 0;
         }
 
+        // Define all the coordinates of the voxels
         double x = coord[0];
         double y = coord[1];
         double z = coord[2];
@@ -68,6 +69,7 @@ public class Volume {
         int y2 = (int) Math.ceil(coord[1]);
         int z2 = (int) Math.ceil(coord[2]);
 
+        // Get all the values for the voxels
         short q000 = getVoxel(x1,y1,z1);
         short q100 = getVoxel(x2,y1,z1);
         short q010 = getVoxel(x1,y2,z1);
@@ -77,18 +79,22 @@ public class Volume {
         short q011 = getVoxel(x1,y2,z2);
         short q111 = getVoxel(x2,y2,z2);
 
+        // Linearly interpolate in the x direction
         double x00 = getLinearInterpolate(x, x1, x2, q000, q100);
         double x10 = getLinearInterpolate(x, x1, x2, q010, q110);
         double x01 = getLinearInterpolate(x, x1, x2, q001, q101);
         double x11 = getLinearInterpolate(x, x1, x2, q011, q111);
+
+        // Linearly interpolate in the y direction
         double r0 = getLinearInterpolate(y, y1, y2, x00, x01);
         double r1 = getLinearInterpolate(y, y1, y2, x10, x11);
 
+        // Linearly interpolate in the z direction
         return (short) getLinearInterpolate(z, z1, z2, r0, r1);
     }
 
-    public static double getLinearInterpolate(double x, int x1, int x2, double q00, double q01) {
-        return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
+    public static double getLinearInterpolate(double x, int x1, int x2, double q1, double q2) {
+        return ((x2 - x) / (x2 - x1)) * q1 + ((x - x1) / (x2 - x1)) * q2;
     }
     
     public short getVoxel(int i) {
